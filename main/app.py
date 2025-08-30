@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 import io
+import os
 from transformers import AutoTokenizer, AutoModelForSequenceClassification, pipeline
 
 # Use conda install pytorch torchvision torchaudio cpuonly -c pytorch if no GPU
@@ -31,12 +32,12 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 st.title("JOFC")
-st.subheader("Joel Ong Fan Club")
+st.subheader("Google Reviews Noise Filter")
 
 # Load model once (cached so it doesn’t reload every time)
 @st.cache_resource
 def load_model():
-    model_path = r"C:\Users\zyice\Documents\tiktok\distilbert-review-classifier-v2" # Change the path to your own
+    model_path = "../debert-v12"
     tokenizer = AutoTokenizer.from_pretrained(model_path)
     model = AutoModelForSequenceClassification.from_pretrained(model_path)
     return pipeline("text-classification", model=model, tokenizer=tokenizer)
@@ -63,10 +64,10 @@ if uploaded_file:
 
         # Map Hugging Face labels to human-friendly names
         category_info = {
-            "LABEL_0": ("Valid", "A genuine review about the location, describing food, service, atmosphere, or experience."),
-            "LABEL_1": ("Spam/Advertisement", "Contains promotional content, links, phone numbers, or marketing language like 'visit', 'discount', 'special offer'. / Talks about unrelated topics (phones, politics, news)."),
-            "LABEL_2": ("Low Quality", "Nonsense, repetitive, very short, or generic ('Good', 'Nice', 'Ok!!!')."),
-            "LABEL_3": ("Rant Without Visit", "Reviewer complains or gives opinion but admits they never visited (e.g., 'Never been here but...').")
+            "LABEL_0": ("0: Valid", "A genuine review about the location, describing food, service, atmosphere, or experience."),
+            "LABEL_1": ("1: Spam/Advertisement", "Contains promotional content, links, phone numbers, or marketing language like 'visit', 'discount', 'special offer'. / Talks about unrelated topics (phones, politics, news)."),
+            "LABEL_2": ("2: Low Quality", "Nonsense, repetitive, very short, or generic ('Good', 'Nice', 'Ok!!!')."),
+            "LABEL_3": ("3: Rant Without Visit", "Reviewer complains or gives opinion but admits they never visited (e.g., 'Never been here but...').")
         }
 
         # Show metrics
@@ -82,12 +83,16 @@ if uploaded_file:
                     unsafe_allow_html=True
                 )
 
+        # Get original filename without extension
+        base_name = os.path.splitext(uploaded_file.name)[0]
+        output_filename = f"{base_name}_labelled.csv"
+
         # Download classified CSV
         csv_bytes = df.to_csv(index=False).encode("utf-8")
         st.download_button(
-            label="Download labelled CSV",
+            label=f"Download {output_filename}",
             data=csv_bytes,
-            file_name="labelled_jofc.csv",
+            file_name=output_filename,
             mime="text/csv"
         )
 else:
