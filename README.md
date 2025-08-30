@@ -89,3 +89,4 @@ We explored both **classical ML models (TF-IDF + Random Forest)** and **transfor
 - Rishabh, Yize – Dataset creation, Streamlit deployment and visualization  
 - Joel, Chuhao – Random Forest baseline and TF-IDF preprocessing  
 - Si Zhao – Gemma-assisted labeling pipeline, DistilBERT & DeBERTa-v3-small fine-tuning and final model selection  
+[Youtube Demo](https://www.youtube.com/watch?v=Q2uovyCQv_4)
